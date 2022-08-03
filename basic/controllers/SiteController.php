@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -63,6 +64,23 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
+
+    // Добавлял тестового пользователя (проверял хэширование пароля и работоспособность в целом)
+    
+    // public function actionAddUser() {
+        
+    //     $user = new User();
+
+    //     $user->username = 'artem';
+    //     $user->setPassword('admin');
+    //     $user->generateAuthKey();
+
+    //     if ($user->save()) {
+    //         echo 'added';
+    //     }
+        
+
+    // }
 
     /**
      * Login action.
