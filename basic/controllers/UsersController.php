@@ -94,7 +94,7 @@ class UsersController extends Controller
                 } 
             }
             // изменённый - хэшируется и перезаписывается
-            if ($this->request->post()['User']['hashed_password'] == $this->request->post()['User']['confirm_password']) {
+            if ($this->request->post()['User']['hashed_password'] == $this->request->post()['User']['confirm_password'] && strlen($this->request->post()['User']['hashed_password']) > 5) {
                 $model->username = $this->request->post()['User']['username'];
                 $model->hashed_password = Yii::$app->getSecurity()->generatePasswordHash($this->request->post()['User']['hashed_password']);
                 $model->confirm_password = '';
@@ -102,7 +102,7 @@ class UsersController extends Controller
                     return $this->redirect(['view', 'id' => $model->id]);
                 } 
             } else {
-                $model->confirm_password = 'Пароли не совпадают!';
+                $model->confirm_password = 'Пароли не совпадают или длина менее 5 символов!';
             }
         }
 
