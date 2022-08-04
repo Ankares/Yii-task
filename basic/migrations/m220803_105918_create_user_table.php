@@ -16,6 +16,7 @@ class m220803_105918_create_user_table extends Migration
             'id' => $this->primaryKey(),
             'username' => $this->string()->notNull()->unique(),
             'hashed_password'=> $this->string(64)->notNull(),
+            'confirm_password'=> $this->string(64)->null(),
             'auth_key' => $this->string(32)->notNull()
         ]);
     }

@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\User;
 use app\models\UsersList;
+use GuzzleHttp\Psr7\AppendStream;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,10 +26,10 @@ class UsersController extends Controller
             [
                 'access' => [
                     'class' => AccessControl::className(),
-                    'only' => ['update', 'delete'],
+                    'only' => ['update', 'delete', 'view'],
                     'rules' => [
                         [
-                            'actions' => ['update','delete'],
+                            'actions' => ['update','delete', 'view'],
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -83,8 +85,25 @@ class UsersController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            // неизменённый пароль не перезаписывается
+            if ($model->hashed_password == $this->request->post()['User']['hashed_password'] ) {
+                $model->username = $this->request->post()['User']['username'];
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } 
+            }
+            // изменённый - хэшируется и перезаписывается
+            if ($this->request->post()['User']['hashed_password'] == $this->request->post()['User']['confirm_password']) {
+                $model->username = $this->request->post()['User']['username'];
+                $model->hashed_password = Yii::$app->getSecurity()->generatePasswordHash($this->request->post()['User']['hashed_password']);
+                $model->confirm_password = '';
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                } 
+            } else {
+                $model->confirm_password = 'Пароли не совпадают!';
+            }
         }
 
         return $this->render('update', [
