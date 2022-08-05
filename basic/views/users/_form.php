@@ -16,8 +16,12 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'hashed_password')->textInput(['maxlength' => true])->label('Password') ?>
 
-    <?= $form->field($model, 'confirm_password')->textInput(['maxlength' => true])->label('Confirm password') ?>
-
+    <label>Confirm Password</label> <br>
+    <div style='color:red'>
+        <?=$errors?>
+    </div>
+    <input class="confirm" type="text" name="confirm_password" placeholder="Повторите пароль">
+    
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

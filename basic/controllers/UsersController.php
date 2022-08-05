@@ -26,10 +26,10 @@ class UsersController extends Controller
             [
                 'access' => [
                     'class' => AccessControl::className(),
-                    'only' => ['update', 'delete', 'view'],
+                    'only' => [],
                     'rules' => [
                         [
-                            'actions' => ['update','delete', 'view'],
+                            'actions' => [],
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -83,6 +83,7 @@ class UsersController extends Controller
      */
     public function actionUpdate($id)
     {
+        $errors = '';
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post())) {
@@ -94,20 +95,20 @@ class UsersController extends Controller
                 } 
             }
             // изменённый - хэшируется и перезаписывается
-            if ($this->request->post()['User']['hashed_password'] == $this->request->post()['User']['confirm_password'] && strlen($this->request->post()['User']['hashed_password']) > 5) {
+            if ($this->request->post()['User']['hashed_password'] == $_POST['confirm_password'] && strlen($this->request->post()['User']['hashed_password']) > 5) {
                 $model->username = $this->request->post()['User']['username'];
                 $model->hashed_password = Yii::$app->getSecurity()->generatePasswordHash($this->request->post()['User']['hashed_password']);
-                $model->confirm_password = '';
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 } 
             } else {
-                $model->confirm_password = 'Пароли не совпадают или длина менее 5 символов!';
+                $errors = 'Пароли не совпадают либо длина менее 5 символов';
             }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'errors'=> $errors,
         ]);
     }
 
